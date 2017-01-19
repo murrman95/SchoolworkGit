@@ -1,26 +1,38 @@
+/*Author: Christopher Murray
+ *Date: Jan 20th, 2017
+ *This program firstly takes the number of vertices and edges, represents them
+ *in a Compressed Sparse Row format. The program then displays the number
+ *vertices in each level of in and out degree
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
+//Swap function will swap two elements of an array based on the indices provided
 void swap(int Array[], int i1, int i2);
+
+//Add adge will add an edge in CSR format
 void addEdge(int vArray[], int eArray[], int v1, int v2, int vArrayLen);
+
+//inOutDegree populates inArrray and outArray with the in and out degree of each
+//vertex (respectively)
 void inOutDegree(int inArray[], int outArray[], int vArray[], int eArray[],
 int vArrayLen);
+
+//maxArray returns the maximum value of an array
 int maxArray(int Array[], int ArrayLen);
+
+//max determines the max of 2 integers
 int max(int i, int j);
 
 int main(){
   int v;
+  printf("Please enter the number of vertices:\n");
   int vNum = scanf("%d", &v);
-  if(vNum != 1){
-    printf("Invalid input\n");
-    return EXIT_FAILURE;
-  }
+
   int e;
+  printf("Please enter the number of edges:\n");
   int eNum = scanf("%d", &e);
-  if(eNum != 1){
-    printf("Invalid input\n");
-    return EXIT_FAILURE;
-  }
+
   int vArray[v+1]; // extra cell is to store the length of the edge array
   int inArray[v]; // This array holds the in-degree of each vertice
   int outArray[v]; // This array holds the out degree of each vertice
@@ -36,9 +48,11 @@ int main(){
   }
   for(int i = 0; i < e; i++){
     int v1, v2;
-    scanf("%d %d", &v1, &v2);
-    if(v1 >= v || v2 >= v){
-      printf("Invalid, vertice inputted don't exist");
+    printf("Please enter an edge (set of two vertices):\n");
+    int in = scanf("%d %d", &v1, &v2);
+    printf("%d\n", in);
+    if(v1 >= v || v2 >= v || in != 2){
+      printf("Invalid input. Terminating\n");
       return EXIT_FAILURE;
     }
     addEdge(vArray, eArray, v1, v2, v+1);
