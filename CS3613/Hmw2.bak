@@ -1,0 +1,9 @@
+#lang plai-typed
+
+(define formatter(lambda(s) : string
+                   (string-set! (symbol->string s) 2 #\,)))
+
+(define (traverse formatter list)
+  (helper formatter list newList)
+
+                                  
