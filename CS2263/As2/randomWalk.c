@@ -1,10 +1,22 @@
+/*
+ *Author: Christopher Murray ID: 3108107
+ *The purpose of this program is to produce a 26 length random walk on a nxn
+ *array where n is provided by the user
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
 
+//Prints a 2D array
 void printArray(char *array[], int bound);
+
+//Applies a random walk to a 2D array
 void randomWalk(char *array[], int bound);
+
+//Determines whether or not a position in an array is "locked" (no step can
+//proceed from that point)
 bool isLocked(char *array[], int x, int y, int bound);
 
 int main(){
