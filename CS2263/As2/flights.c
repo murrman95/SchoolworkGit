@@ -1,7 +1,18 @@
+/*
+ *Author: Christopher Murray ID: 3108107
+ *The purpose of this procram is that the user enters a desired time to fly
+ *and the program returns the closest time of departure froma  list of flights
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
+//Returns the pointers deparrtureTime and arrivalTIme as the departure and
+//arrival of the closest flight
 void findClosestFlight(int desiredTime, int *departureTime, int *arrivalTIme);
+
+//Sets the hours pointer to the number of hours within totalMinutes and Returns
+//the remaining minutes as the return value.
 int hoursIn(int totalMinutes,int *hours);
 
 int main(){
@@ -12,17 +23,17 @@ int main(){
   if(scanf("%d:%d", &userHour, &userMinute) != 2){
     printf("Invalid input\n");
   }
-  
+
   userTime = (60*userHour) + userMinute;
   int userDepart = 0;
   int userArrive = 0;
-  
+
   findClosestFlight(userTime, &userDepart, &userArrive);
   int dHours;
   int dMinutes;
   int aHours;
   int aMinutes;
-  
+
   dMinutes = hoursIn(userDepart, &dHours);
   aMinutes = hoursIn(userArrive, &aHours);
   if(dMinutes >= 10){
@@ -39,7 +50,7 @@ int main(){
   }
   else{
     printf("The arrival time of the closest flight is: %d:0%d\n", aHours
-                                                                , aMinutes);    
+                                                                , aMinutes);
   }
   return 0;
 }
@@ -47,21 +58,21 @@ int main(){
 void findClosestFlight(int desiredTime,int *departureTime, int *arrivalTime){
   int *d = departureTime;
   int *a = arrivalTime;
-  
+
   int closest = 24*60+1; //larger than the amount of minutes there are in a day
   FILE *f = fopen("flights.dat","r");
   int counter = 0; //Just to keep track of reading departure times or arrivals
-  
+
   int dhours;
   int dminutes;
   int ahours;
   int aminutes;
-    
-  while((fscanf(f,"%d:%d", &dhours, &dminutes) == 2) 
+
+  while((fscanf(f,"%d:%d", &dhours, &dminutes) == 2)
       && (fscanf(f,"%d:%d", &ahours, &aminutes) == 2)){
     int dtime = (dhours*60) + dminutes;
     int atime = (ahours*60) + aminutes;
-  
+
     int compare = desiredTime - dtime;
     if(compare < 0){
       if((compare * -1) < closest){
