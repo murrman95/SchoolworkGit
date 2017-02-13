@@ -9,7 +9,6 @@ int  max;
 int  ave;
 int *arrayPointer[];
 
-void collatz(int init);
 void average_func(void * size);
 void min_func(void * size);
 void max_func(void * size);
