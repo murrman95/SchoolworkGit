@@ -10,15 +10,31 @@ unsigned long *weights;
 int *permute;
 int nQ;
 char ** allMatches(char *prefix, int *nR);
+void swapWeights(int i1, int i2);
+void swapQueries(int i1, int i2);
 
-int compareWeights(const void * s1, const void * s2, void * arg){
+void swapQueries(int i1, int i2){
+  char * temp = queries[i2];
+  queries[i2] = queries[i1];
+  queries[i1] = temp;
+}
+
+void swapWeights(int i1, int i2){
+  unsigned long temp = weights[i2];
+  weights[i2] = weights[i1];
+  weights[i1] = temp;
+}
+
+int compareWeights(const void * s1, const void * s2){
   const int S1 = *(const int *)s1;
   const int S2 = *(const int *)s2;
 
   if(weights[S1] > weights[S2]){
+
     return -1;
   }
   else if(weights[S1] < weights[S2]){
+    swapWeights(S1, S2);
     return 1;
   }
   else{
@@ -83,7 +99,7 @@ char ** allMatches(char *prefix, int * nR){
   }
   else{
     *nR = max - min;
-    qsort_r(&permute[min],*nR, sizeof(int), &compareWeights, weights);
+    qsort(&permute[min],*nR, sizeof(int), &compareWeights);
     char ** results = malloc(*nR * sizeof(char*));
     int j = 0;
     for(int i = min; i < max; i ++){
