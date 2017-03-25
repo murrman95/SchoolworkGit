@@ -6,7 +6,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-#define NUMTHREADS 1000
+#define NUMTHREADS 10000
 
 void *mCarlo(void * arg);
 
