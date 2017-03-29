@@ -20,22 +20,21 @@ flang: NUMBER
     [Div  (l : RFLANG) (r : RFLANG)]
     [Id   (name : symbol)]
     [If (test : RFLANG) (then-part : RFLANG) (else-part : RFLANG)]
-    [With (id : symbol) (named-expr : RFLANG) (bound-body : (listof RFLANG))]
-    [Rec (id : symbol) (named-expr : RFLANG) (bound-body : (listof RFLANG))]
-    [Fun  (param : symbol) (body : (listof RFLANG))]
+    [With (id : symbol) (named-expr : RFLANG) (bound-body : RFLANG)]
+    [Rec (id : symbol) (named-expr : RFLANG) (bound-body : RFLANG)]
+    [Fun  (param : symbol) (body : RFLANG)]
     [Call (fun : RFLANG) (val : RFLANG)]
     [Set (id : symbol) (val : RFLANG)])
 
 (define-type VAL
   [NumV (n : number)]
-  [FunV (arg : symbol) (body : (listof RFLANG)) (env : ENV)]
+  [FunV (arg : symbol) (body : RFLANG) (env : ENV)]
   [BogusV (garbage : void)])
 
 (define (val->number v)
   (type-case VAL v
      [NumV (num) num]
      [else (error 'val-number "not a number")]))
-
   (define-type ENV
     [EmptyEnv]
     [Extend (name : symbol) (val : (boxof VAL)) (end : ENV)])
@@ -68,10 +67,10 @@ flang: NUMBER
             (eval else-part env)
             (eval then-part env))]
       [With (bound-id named-expr bound-body)
-       (eval-body bound-body
+       (eval bound-body
              (Extend bound-id (box (eval named-expr env)) env))]
       [Rec (bound-id named-expr bound-body)
-       (eval-body bound-body
+       (eval bound-body
              (extend-rec bound-id named-expr env))]
       [Id (name) (unbox (lookup name env))]
       [Fun (bound-id bound-body)
@@ -80,7 +79,7 @@ flang: NUMBER
        (let ([fval (eval fun-expr env)])
          (type-case VAL fval
            [FunV (bound-id bound-body f-env)
-            (eval-body bound-body
+            (eval bound-body
                   (Extend bound-id (box (eval arg-expr env)) f-env))]
            [else (error 'eval (string-append "`call' expects a function, got: "
                                              (to-string fval)))]))]
@@ -95,14 +94,6 @@ flang: NUMBER
           (begin
             (set-box! new-cell value)
             new-env)))))
-
-(define (eval-body [expr-list : (listof RFLANG)] [env : ENV])
-  (if (empty? (rest expr-list))
-      (eval (first expr-list) env)
-      (begin
-        (eval (first expr-list) env)
-        (eval-body (rest expr-list) env))))
-
 (require plai-typed/s-exp-match)
 (define (parse-error sx)
   (error 'parse-sx (string-append "parse error: " (to-string sx))))
@@ -117,24 +108,20 @@ flang: NUMBER
                 [val (parse-sx (sx-ref def 1))]
                 [expr (px 2)])
            (values id val expr)))
-       (define (set-pieces)
-         (let* ([id (s-exp->symbol (sx-ref sx 1))]
+       (define (set-peices)
+         (let* ([id (px 1)]
                 [val (px 2)])
-           (values id val)))]
+           (values id val)))
     (cond
       [(s-exp-number? sx) (Num (s-exp->number sx))]
       [(s-exp-symbol? sx) (Id (s-exp->symbol sx))]
       [(s-exp-match? '(with (SYMBOL ANY) ANY) sx)
        (local [(define-values (id val expr) (with-rec-pieces))]
-         (if (empty? expr)
-             (parse-error sx)
-         (With id val expr)))]
-      [(s-exp-match? '(rec (SYMBOL ANY) (ANY)) sx)
+         (With id val expr))]
+      [(s-exp-match? '(rec (SYMBOL ANY) ANY) sx)
        (local [(define-values (id val expr) (with-rec-pieces))]
-         (if (empty? expr)
-             (parse-error sx)
-         (Rec id val expr)))]
-      [(s-exp-match? '(set! SYMBOL ANY) sx)
+         (Rec id val expr))]
+      [(s-exp-match? '(set SYMBOL (ANY)) sx)
        (local [(define-values (id expr) (set-pieces))]
          (Set id expr))]
       [(s-exp-match? '(if ANY ANY ANY) sx)
@@ -142,10 +129,8 @@ flang: NUMBER
       [(s-exp-match? '(fun (SYMBOL) ANY) sx)
        (let* ([args (sx-ref sx 1)]
               [id (s-exp->symbol (sx-ref args 0))]
-              [body (px 2)])
-         (if (empty? body)
-             (parse-error sx)
-         (Fun id body)))]
+              [body (parse-sx (sx-ref sx 2))])
+         (Fun id body))]
       [(s-exp-list? sx)
        (let* ([l (λ () (px 1))]
               [r (λ () (px 2))])
@@ -156,7 +141,7 @@ flang: NUMBER
            [(/) (Div (l) (r))]
            [(call) (Call (l) (r))]
            [else (parse-error sx)]))]
-    [else (parse-error sx)])))
+    [else (parse-error sx)])]))
 
   ;; evaluate a RFLANG program contained in a string
   (define (run sx)
@@ -187,6 +172,3 @@ flang: NUMBER
                                  {* n {call fact {- n 1}}}
                                  1}}}
                    {call fact 5}})  120))
-
-;;More test cases here
-(test (run '{with {x 0}{with {y {set! x 2}} x}})  2)
