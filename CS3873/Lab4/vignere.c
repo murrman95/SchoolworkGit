@@ -4,25 +4,6 @@
 #include <math.h>
 #include "header.h"
 
-//double countLetters(char * words){
-//  double num = 0;
-//  for(int i = 0; i < numWords; i ++){
-//    int wLen = strlen(words[i]);
-//    for(int j = 0; j < wLen; j ++){
-//      if(words[i][j] >= 'A' && words[i][j] <= 'Z'){
-//        num += 1;
-//      }
-//
-//      if(words[i][j] >= 'a'  && words[i][j] <= 'z'){
-//        num += 1;
-//      }
-//    }
-//  }
-//  return num;
-//}
-
-//Calculates the Index of Coincidence in this code. Used for calculating the
-//length of the keyword used in "seeding" the cypher.
 double vIC(char * words){
   double IC = 0;
   double numLetters = strlen(words);
@@ -50,6 +31,7 @@ double vIC(char * words){
 void getFreqs(double * array, int numLetters){
   for(int i = 0; i < 26; i ++){
     array[i] = array[i] / numLetters;
+
   }
 }
 
@@ -68,41 +50,6 @@ void cpyDArray(double * a1, double * a2){
   }
 }
 
-/*char * toTextString(char ** words, int numWords){
-  int numLetters = (int)countLetters(words,numWords);
-  char * string = malloc(sizeof(char) * (numLetters + 1));
-  int sCounter = 0;
-  for(int i = 0; i < numWords; i ++){
-    int wLen = strlen(words[i]);
-    for(int j = 0; j < wLen; j ++){
-      if(words[i][j] >= 'a' && words[i][j] <= 'z'){
-        string[sCounter] = words[i][j];
-        sCounter ++;
-      }
-      if(words[i][j] >= 'A' && words[i][j] <= 'Z'){
-        string[sCounter] = words[i][j];
-        sCounter ++;
-      }
-    }
-  }
-  string[numLetters] = '\0';
-  return string;
-}*/
-
-/*char * toupper(char * string){
-  char * res = malloc(sizeof(char) * (strlen(string) + 1));
-
-  for(int i = 0; i < strlen(string); i ++){
-    if(string[i] >= 'a' && string[i] <= 'z'){
-      res[i] = string[i] + ('A' - 'a');
-    }
-    else{
-      res[i] = string[i];
-    }
-  }
-  res[strlen(string)] = '\0';
-  return res;
-}*/
 
 void getICs(double * array, int size){
   double num = 1;
@@ -126,21 +73,3 @@ int findD(double * array, int ICSize, double IC){
   }
   return index;
 }
-//This is if I want to trim input to not inlude punctuation.
-/*
-void wordsOnly(char ** words, int numWords){
-  for(int i = 0; i < numWords; i ++){
-    int wLen = strlen(words[i]);
-    for(int j = 0; j < wLen; j ++){
-      if(word[i][j] >= 'A' && word[i][j] <= 'Z'){
-        word[i][j] = tolower(word[i][j]);
-      }
-
- if(word[i][j] < 'a'  && word[i][j] > 'z'){
-        strcpy(&word[i][j], &word[i][j+1]){
-          wLen --;
-        }
-      }
-    }
-  }
-}*/
